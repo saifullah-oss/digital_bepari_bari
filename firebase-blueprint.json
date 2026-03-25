@@ -76,6 +76,37 @@
         "timestamp": { "type": "string", "format": "date-time", "description": "Alert timestamp." }
       },
       "required": ["uid", "latitude", "longitude", "timestamp"]
+    },
+    "BloodDonor": {
+      "title": "Blood Donor",
+      "description": "A member registered as a blood donor.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "bloodGroup": { "type": "string" },
+        "location": { "type": "string" },
+        "phone": { "type": "string" },
+        "status": { "type": "string", "enum": ["ACTIVE", "BUSY"] },
+        "uid": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "bloodGroup", "location", "phone", "status", "uid"]
+    },
+    "Medicine": {
+      "title": "Medicine",
+      "description": "A medicine shared by a member.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "quantity": { "type": "string" },
+        "donorName": { "type": "string" },
+        "donorUid": { "type": "string" },
+        "phone": { "type": "string" },
+        "status": { "type": "string", "enum": ["Available", "Taken"] },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "type", "quantity", "donorName", "donorUid", "phone", "status"]
     }
   },
   "firestore": {
@@ -83,6 +114,8 @@
     "/events/{eventId}": { "schema": "Event", "description": "Collection of family events." },
     "/funds/{fundId}": { "schema": "Fund", "description": "Collection of fund trackers." },
     "/products/{productId}": { "schema": "Product", "description": "Collection of marketplace products." },
-    "/sos/{sosId}": { "schema": "SOS", "description": "Collection of emergency alerts." }
+    "/sos/{sosId}": { "schema": "SOS", "description": "Collection of emergency alerts." },
+    "/blood_donors/{donorId}": { "schema": "BloodDonor", "description": "Collection of blood donors." },
+    "/medicines/{medicineId}": { "schema": "Medicine", "description": "Collection of shared medicines." }
   }
 }
