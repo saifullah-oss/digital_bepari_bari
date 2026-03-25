@@ -1,0 +1,88 @@
+{
+  "entities": {
+    "Member": {
+      "title": "Member",
+      "description": "A member of the Bepari family.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Full name of the member." },
+        "fatherName": { "type": "string", "description": "Father's name." },
+        "dob": { "type": "string", "format": "date", "description": "Date of birth (YYYY-MM-DD)." },
+        "marriageDate": { "type": "string", "format": "date", "description": "Marriage date (YYYY-MM-DD)." },
+        "phone": { "type": "string", "description": "Phone number." },
+        "profession": { "type": "string", "description": "Profession (e.g., Doctor, Teacher)." },
+        "achievement": { "type": "string", "description": "Key achievements." },
+        "badge": { "type": "string", "enum": ["Gold", "Silver", "None"], "description": "Ranking badge." },
+        "status": { "type": "string", "enum": ["pending", "approved"], "description": "Approval status." },
+        "role": { "type": "string", "enum": ["admin", "member"], "description": "User role." },
+        "photoUrl": { "type": "string", "description": "Profile photo URL." },
+        "uid": { "type": "string", "description": "Firebase Auth UID." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp." }
+      },
+      "required": ["name", "phone", "status", "role"]
+    },
+    "Event": {
+      "title": "Event",
+      "description": "A family event or meeting.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Event title." },
+        "description": { "type": "string", "description": "Event details." },
+        "date": { "type": "string", "format": "date", "description": "Event date." },
+        "photoUrl": { "type": "string", "description": "Event photo URL." },
+        "authorUid": { "type": "string", "description": "UID of the poster." },
+        "status": { "type": "string", "enum": ["pending", "approved"], "description": "Moderation status." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp." }
+      },
+      "required": ["title", "description", "date", "authorUid", "status"]
+    },
+    "Fund": {
+      "title": "Fund",
+      "description": "A fund collection tracker.",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Fund purpose." },
+        "target": { "type": "number", "description": "Target amount." },
+        "current": { "type": "number", "description": "Current collected amount." },
+        "instructions": { "type": "string", "description": "Payment instructions (bKash/Nagad)." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp." }
+      },
+      "required": ["title", "target", "current"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "A product listed in the marketplace.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Product name." },
+        "price": { "type": "number", "description": "Product price." },
+        "description": { "type": "string", "description": "Product description." },
+        "photoUrl": { "type": "string", "description": "Product photo URL." },
+        "sellerPhone": { "type": "string", "description": "Seller's phone number." },
+        "sellerUid": { "type": "string", "description": "Seller's UID." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp." }
+      },
+      "required": ["name", "price", "sellerPhone", "sellerUid"]
+    },
+    "SOS": {
+      "title": "SOS",
+      "description": "An emergency SOS alert.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "UID of the person in danger." },
+        "latitude": { "type": "number", "description": "Latitude." },
+        "longitude": { "type": "number", "description": "Longitude." },
+        "message": { "type": "string", "description": "Emergency message." },
+        "timestamp": { "type": "string", "format": "date-time", "description": "Alert timestamp." }
+      },
+      "required": ["uid", "latitude", "longitude", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/members/{memberId}": { "schema": "Member", "description": "Collection of family members." },
+    "/events/{eventId}": { "schema": "Event", "description": "Collection of family events." },
+    "/funds/{fundId}": { "schema": "Fund", "description": "Collection of fund trackers." },
+    "/products/{productId}": { "schema": "Product", "description": "Collection of marketplace products." },
+    "/sos/{sosId}": { "schema": "SOS", "description": "Collection of emergency alerts." }
+  }
+}

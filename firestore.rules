@@ -1,0 +1,124 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: members
+    // Fields: name, fatherName, dob, marriageDate, phone, profession, achievement, badge, status, role, photoUrl, uid, createdAt
+    //
+    // Collection: events
+    // Fields: title, description, date, photoUrl, authorUid, status, createdAt
+    //
+    // Collection: funds
+    // Fields: title, target, current, instructions, createdAt
+    //
+    // Collection: products
+    // Fields: name, price, description, photoUrl, sellerPhone, sellerUid, createdAt
+    //
+    // Collection: sos
+    // Fields: uid, latitude, longitude, message, timestamp
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getMemberData() {
+      return get(/databases/$(database)/documents/members/$(request.auth.uid)).data;
+    }
+    
+    function isAdmin() {
+      return isAuthenticated() && (
+        (exists(/databases/$(database)/documents/members/$(request.auth.uid)) && getMemberData().role == 'admin') || 
+        (request.auth.token.email == "saifullahsojib998@gmail.com" && request.auth.token.email_verified == true)
+      );
+    }
+    
+    function isApproved() {
+      return isAuthenticated() && exists(/databases/$(database)/documents/members/$(request.auth.uid)) && getMemberData().status == 'approved';
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidMember(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.phone is string && data.phone.size() >= 10 && data.phone.size() <= 15 &&
+             data.status in ['pending', 'approved'] &&
+             data.role in ['admin', 'member'];
+    }
+
+    function isValidEvent(data) {
+      return data.title is string && data.title.size() > 0 && data.title.size() < 200 &&
+             data.description is string && data.description.size() < 2000 &&
+             data.status in ['pending', 'approved'];
+    }
+
+    function isValidProduct(data) {
+      return data.name is string && data.name.size() > 0 && data.name.size() < 200 &&
+             data.price is number && data.price >= 0 &&
+             data.sellerPhone is string;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /members/{memberId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && isValidMember(request.resource.data);
+      allow update: if isAdmin() || (isAuthenticated() && isOwner(memberId) && 
+                    request.resource.data.status == resource.data.status && 
+                    request.resource.data.role == resource.data.role &&
+                    isValidMember(request.resource.data));
+      allow delete: if isAdmin();
+    }
+
+    match /blood_donors/{donorId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin() || (isAuthenticated() && isOwner(resource.data.uid));
+    }
+
+    match /medicines/{medicineId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin() || (isAuthenticated() && isOwner(resource.data.donorUid));
+    }
+
+    match /events/{eventId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && isValidEvent(request.resource.data);
+      allow update, delete: if isAdmin();
+    }
+
+    match /funds/{fundId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow create: if isAuthenticated() && isValidProduct(request.resource.data);
+      allow update: if isAdmin() || (isAuthenticated() && isOwner(resource.data.sellerUid) && isValidProduct(request.resource.data));
+      allow delete: if isAdmin() || (isAuthenticated() && isOwner(resource.data.sellerUid));
+    }
+
+    match /sos/{sosId} {
+      allow read: if true;
+      allow create: if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+    
+    match /test/connection {
+      allow read: if true;
+    }
+  }
+}
