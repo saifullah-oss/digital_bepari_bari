@@ -1,5 +1,5 @@
-{
-  "name": "Digital Bepari Bari",
-  "description": "A comprehensive family portal for the Bepari family, featuring a family tree, professional directory, marketplace, and emergency SOS system.",
-  "requestFramePermissions": ["geolocation"]
-}
+# Firebase Auth Handler — সবচেয়ে উপরে রাখুন (খুব জরুরি!)
+/__/auth/handler    /__/auth/handler    200
+
+# সাধারণ SPA redirect (এটা নিচে রাখুন)
+ /*                 /index.html         200
